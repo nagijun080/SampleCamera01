@@ -1,21 +1,26 @@
 package sample.android.camera01;
 
 import java.io.IOException;
+import java.util.List;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.hardware.Camera.Size;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder.Callback;
+import android.view.View;
 import android.hardware.Camera.PictureCallback;
 
 public class SampleView extends SurfaceView implements Callback, PictureCallback{
 
-	private Camera camera;
+	public Camera camera;
+	
 	
 	public SampleView(Context context) {
 		super(context);
@@ -28,15 +33,19 @@ public class SampleView extends SurfaceView implements Callback, PictureCallback
 	public void surfaceChanged(SurfaceHolder holder, int f, int w, int h) {
 		// TODO 自動生成されたメソッド・スタブ
 		Camera.Parameters p = camera.getParameters();
-		p.setPreviewSize(w, h);
+		List<Size> previewSizes = camera.getParameters().getSupportedPreviewSizes();
+	    Size size = previewSizes.get(0);
+	    p.setPreviewSize(size.width, size.height);
 		camera.setParameters(p);
 		camera.startPreview();
 	}
 
+	@TargetApi(9)
 	public void surfaceCreated(SurfaceHolder holder) {
 		// TODO 自動生成されたメソッド・スタブ
 		try {
-			camera = Camera.open();
+			camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+			camera.setDisplayOrientation(90);
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {
 			
@@ -57,6 +66,8 @@ public class SampleView extends SurfaceView implements Callback, PictureCallback
 		camera.startPreview();
 	}
 
+	
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent me) {
 		// TODO 自動生成されたメソッド・スタブ
